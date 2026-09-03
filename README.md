@@ -1,5 +1,3 @@
-# David Yoakum
-
 **Full-stack product engineer building ambitious web products.**
 
 I’m a senior frontend / full-stack engineer with 8+ years of experience. I’m drawn to products where interface design and systems architecture are equally important: real-time data, financial systems, consumer applications, and design-driven publishing.
