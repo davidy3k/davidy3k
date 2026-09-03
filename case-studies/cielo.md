@@ -2,7 +2,7 @@
 
 ### Real-time onchain analytics & trading
 
-**Senior Software Engineer · March 2025–present**
+**Senior Software Engineer**
 
 [View the live product](https://cielo.finance/)
 

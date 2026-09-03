@@ -54,6 +54,6 @@ Built across mobile, web, GraphQL, and banking systems during three years of hyp
 
 ---
 
-Based in **New York City** and interested in senior frontend / full-stack product engineering roles.
+Based in **New York City**
 
 [LinkedIn](https://linkedin.com/in/dyoakum) · [Email](mailto:dyoakum@gmail.com)
