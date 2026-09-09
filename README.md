@@ -16,6 +16,22 @@ Trading interfaces, real-time data architecture, server-rendered data infrastruc
 
 [View the live product](https://cielo.finance/) · [Read the case study](case-studies/cielo.md)
 
+### MintStars
+
+**Creator subscriptions & financial infrastructure**
+
+`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
+
+Led a ground-up platform rewrite and built its internal financial infrastructure, including an auditable ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+
+### Joust
+
+**Social prediction markets**
+
+`Next.js` · `TypeScript` · `wagmi` · `viem` · `Prisma` · `PostgreSQL` · `Inngest`
+
+Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
+
 ### [Spike Art Magazine](https://www.spikeartmagazine.com/)
 
 **Editorial publishing platform**
@@ -26,23 +42,7 @@ A ground-up replacement for a failing legacy publishing system: custom CMS, arch
 
 [View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
 
-### Joust
-
-**Social prediction markets**
-
-`Next.js` · `TypeScript` · `wagmi` · `viem` · `Prisma` · `PostgreSQL` · `Inngest`
-
-Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
-
-### MintStars
-
-**Creator subscriptions & financial infrastructure**
-
-`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
-
-Led a ground-up platform rewrite and built its internal financial infrastructure, including an auditable ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
-
-### Self Financial
+### [Self Financial](https://www.self.inc/)
 
 **Consumer fintech**
 
