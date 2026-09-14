@@ -22,13 +22,15 @@ Trading interfaces, real-time data architecture, server-rendered data infrastruc
 
 Led a ground-up platform rewrite and built its internal financial infrastructure, including an auditable ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
 
-### Joust
+### [Joust](case-studies/joust.md)
 
 **Social prediction markets**
 
 `Next.js` · `TypeScript` · `wagmi` · `viem` · `Prisma` · `PostgreSQL` · `Inngest`
 
 Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
+
+[Read the case study](case-studies/joust.md)
 
 ### [Spike Art Magazine](https://www.spikeartmagazine.com/)
 
