@@ -2,7 +2,7 @@
 
 ### Social prediction markets for small communities
 
-**Co-founder & Full-stack Product Engineer · 2025–present**
+**Co-founder & Full-stack Product Engineer**
 
 ![Joust home showing active markets, arbiter invitations, and role-based activity](../assets/joust/joust-home.jpg)
 
