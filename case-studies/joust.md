@@ -118,6 +118,8 @@ Joust uses a responsive, animated castle atmosphere to give the product a recogn
 
 That visual system sits behind ordinary React interfaces rather than dictating them. The product stays readable and operational while retaining a tone appropriate to jousts, arbiters, and competition.
 
+![Example gif of hightened atmosphere effects](../assets/joust/joust-atmosphere-1.gif)
+
 ## Stack
 
 TypeScript · React · Next.js · TanStack Query · Prisma · PostgreSQL · Inngest · wagmi · viem · Abstract Wallet · Redis · PixiJS · Sentry
