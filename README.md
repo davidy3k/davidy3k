@@ -40,7 +40,7 @@ Co-founder and engineer. Built the product full-stack, including market lifecycl
 
 `Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
 
-Led a ground-up platform rewrite and built its internal financial infrastructure, including an atomically enforced transaction and movement ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+As Lead Software Engineer, architected and led the Next.js rewrite, moving everyday commerce from onchain transactions to internal balances. Built atomic purchase and payment records, integrated provider payments and Polygon USDC payouts, and mentored engineers into release and operational ownership.
 
 [Read the case study](case-studies/mintstars.md)
 

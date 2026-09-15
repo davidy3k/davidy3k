@@ -1,124 +1,77 @@
 # MintStars
 
-### Creator subscriptions and financial infrastructure
+### Rebuilding creator commerce around internal balances and reliable payment flows
 
-**Full-stack Product Engineer**
+**Lead Software Engineer · November 2023–February 2025**
 
-![MintStars creator dashboard showing earnings, weekly metrics, and top fans with sample data](../assets/mintstars/mintstars-dashboard.png)
+**Scope:** Application architecture, financial systems, infrastructure, product delivery, and engineering mentorship
 
-MintStars was a subscription and commerce platform for independent adult creators. It combined publishing, recurring subscriptions, direct content sales, tips, internal balances, and creator payouts in one product.
+MintStars was a subscription and commerce platform for independent adult creators. I architected and led its Next.js rewrite, moving everyday purchases and tips from onchain transactions to an internal balance system, with crypto used at the funding and payout boundaries.
 
-I led a ground-up application rewrite and built across the product stack, with particular responsibility for the financial systems connecting payments, balances, transaction history, and fiat and USDC withdrawals. During this period, the platform grew roughly **12× in creators and 10× in monthly revenue**.
+I built the replacement with a UI-focused mid-level engineer while we maintained the existing application. After early guidance from a part-time CTO, I became the company's technical owner: responsible for architecture, infrastructure, code review, and releases. As the team changed, I mentored mid-level and junior engineers and helped them take on more release and operational responsibility. I worked closely with our PM, founders, and customer-service lead.
 
-The case study stays focused on the engineering and uses only work-safe product imagery.
+![MintStars creator dashboard with sample earnings, weekly metrics, and top fans](../assets/mintstars/mintstars-dashboard.png)
 
-## Rebuilding a platform while it was growing
+*Recreated interface from my tenure, using synthetic names and figures. This is sample data, not a record of company performance.*
 
-The rewrite moved the product onto a full-stack TypeScript architecture built around Next.js, tRPC, Prisma, and PostgreSQL. It had to support a broad application surface without losing the operational details that mattered to a payments business.
+## Moving everyday commerce offchain
 
-```mermaid
-flowchart LR
-    A[React client] <--> B[Next.js and tRPC]
-    B <--> C[(Neon PostgreSQL)]
-    B <--> D[(Upstash Redis)]
-    B <--> E[Coinflow payments]
-    B <--> F[Polygon and USDC]
-    B --> G[Inngest workflows]
-    B <--> H[Media storage and delivery]
-    B <--> I[Algolia search]
-    B <--> J[Age and identity verification]
-    B --> K[Logging, analytics, and error tracking]
-```
+The previous Nest application put each purchase and tip on Polygon, then relied on blockchain listeners to update application state. Transactions could stall, leaving users waiting for ordinary product interactions to complete.
 
-_Simplified system map based on the application and its historical architecture documentation._
+The founders and part-time CTO had outlined a different approach: keep everyday commerce in an internal ledger and use crypto for moving funds into and out of the platform. I turned that direction into a full-stack TypeScript application using Next.js, tRPC, Prisma, and PostgreSQL. Purchases could update balances and content ownership in the database without waiting for a blockchain confirmation.
 
-The surrounding platform included image and video delivery, search, authentication, age and identity verification, analytics, and operational monitoring. The harder boundary was financial: several kinds of purchases could originate from an internal balance, an external payment processor, or a combination of the two, then produce creator earnings, platform fees, and later withdrawals through a different rail.
+This was an application rewrite with deliberate reuse. We retained the existing PostgreSQL database and adapted the Prisma schema around it, reducing the amount of data restructuring required at cutover. We also carried over UI components, repairing and refactoring them as we rebuilt publishing, subscriptions, purchases, messaging, and account flows.
 
-## A unified history of money movement
+## Keeping purchases, balances, and history together
 
-![MintStars transaction history showing deposits, content sales, tips, subscriptions, royalties, and withdrawals with sample data](../assets/mintstars/mintstars-transaction-history.png)
+I built a shared transaction model linking business events to their balance changes, fees, and content movements. A content purchase illustrates the boundary:
 
-I built an atomically enforced transaction and movement ledger that connected each high-level business event to the balance, treasury, and asset changes it produced. Deposits, tips, subscriptions, content sales, resales, royalties, withdrawals, and administrative adjustments could share one transaction history while retaining their domain-specific records.
+1. Debit the buyer's balance and check that sufficient funds remain.
+2. Create the purchased content ownership record and credit the creator.
+3. Create the payment event, balance-change records, platform-fee record, and content-movement record under one transaction identifier.
 
-```mermaid
-flowchart TD
-    A[Deposit, tip, subscription, sale, resale, or withdrawal] --> B[Transaction record]
-    B --> C[User balance changes]
-    B --> D[Platform fee or treasury change]
-    B --> E[Domain payment record]
-    B --> F[Content or withdrawal record]
-    C --> G[User-facing transaction history]
-    E --> G
-    F --> G
-```
+These writes run in a serializable database transaction: they commit together or roll back together. The purchase's insufficient-funds check can therefore reject the operation without leaving a partial debit or ownership change. Transaction-conflict handling retries the database operation.
 
-Every balance or asset movement had to be accompanied by its originating transaction and required audit records in the same database transaction. Related domain records, user balance movements, platform fees, and ownership changes committed together or rolled back as a unit.
+The same transaction model connects deposits, subscriptions, tips, resales, royalties, withdrawals, and administrative adjustments to a common history. It is an application ledger, not a full double-entry general ledger: its purpose is to make a product event and its associated movements traceable.
 
-The model provided strong consistency, provenance, and auditability without attempting to serve as a full double-entry general ledger. It did not represent every source and destination through a complete chart of accounts; instead, a shared transaction identifier made each application-level movement traceable to the payment, sale, tip, subscription, withdrawal, or asset transfer that caused it.
+![MintStars transaction history with sample deposits, purchases, tips, royalties, and withdrawals](../assets/mintstars/mintstars-transaction-history.png)
 
-The product-facing history then resolved those relationships into useful language, with filters for date and direction and CSV export for creators.
+*Recreated interface with synthetic people, dates, titles, and amounts. Creators could filter their history and export it as CSV.*
 
-## Processing external payments safely
+## Connecting external payments to internal balances
 
-Payment-provider webhooks were turned into application state through background jobs rather than trusted as blind balance updates. The handlers checked the referenced domain record, current status, wallet, processor identifier, and expected amount before changing balances.
+Incoming provider payments had a different lifecycle from purchases using an existing balance. I integrated Coinflow and used authenticated webhooks to dispatch payment processing through Inngest background jobs.
 
-For the principal flows, related writes were grouped in serializable database transactions. A successful deposit, for example, updated the user balance, completed the deposit, and created its linked transaction and balance-change records together. Retry handling covered transaction conflicts, while status checks and provider identifiers protected against processing the same event twice.
+For a deposit, the application first creates an expected deposit record. On a settled payment event, processing checks that record's status, provider identifier, wallet presence, and expected amount. It then credits the balance, completes the deposit, and creates the linked transaction and balance-change records in one database transaction. Event identifiers, status checks, and unique provider identifiers provide safeguards against repeated processing.
 
-```mermaid
-flowchart LR
-    A[Payment-provider webhook] --> B[Durable background event]
-    B --> C[Load expected payment record]
-    C --> D[Validate state, identity, and amount]
-    D --> E[Serializable database transaction]
-    E --> F[Balance and transaction records]
-    F --> G[Notifications and follow-up work]
-    D --> H[Failure state and operational alert]
-```
+Withdrawals crossed the boundary in the other direction. Bank and debit-card payouts required provider onboarding and a configured payout destination. The application submitted the provider-supplied Polygon transaction, then an Inngest workflow waited for chain confirmation before completing the withdrawal and committing the balance debit and transaction history together. This was the application's funding-confirmation boundary; it did not mean the recipient's bank had already posted the payout.
 
-The same event-driven layer handled subscription renewals and failures, tip processing, payout confirmation, transactional email, media jobs, search indexing, and recovery operations. Sentry, structured logging, and Slack alerts gave payment failures somewhere explicit to land.
+Creators could also withdraw native USDC directly on Polygon, including where the fiat provider was unavailable. The UI explained the network and token requirements and used a press-and-hold confirmation. Pending-withdrawal checks, retryable confirmation jobs, failure alerts, and manual recovery tools supported the operational side of both payout paths.
 
-## Payouts across bank and crypto rails
+## Improving discovery and publishing
 
-Creators could withdraw through conventional payout methods or receive native USDC on Polygon. The interface made the differences between those rails explicit rather than hiding them behind one generic form.
+I simplified the homepage's feed queries and added Redis caching for paginated results and counts, applying viewer-specific permissions when preparing the response. This made discovery noticeably faster, though I no longer have a comparable before-and-after measurement.
 
-<p>
-  <img src="../assets/mintstars/mintstars-withdrawal-bank.png" width="49%" alt="MintStars bank withdrawal onboarding form" />
-  <img src="../assets/mintstars/mintstars-withdrawal-crypto.png" width="49%" alt="MintStars USDC withdrawal form with Polygon address guidance" />
-</p>
+Publishing needed similar attention. I added Firebase image processing for web delivery and improved the upload experience with progress, cancellation, retry, and error handling. API Video uploads, processing webhooks, and the post-saving flow had to coordinate so creators could publish image and video content through one interface. Much of this work involved improving inherited components alongside the new backend.
 
-Bank payouts required a one-time account setup with the legal identity expected by the payout provider. Crypto withdrawals required a Polygon-compatible address, warned specifically about the native USDC token, and recommended a small test transfer before committing more funds.
+## Migration, validation, and a delivery lesson
 
-The final crypto confirmation deliberately used friction: the creator had to press and hold while the control visibly progressed, making an irreversible action harder to trigger accidentally.
+We launched the replacement around late February or early March 2024. Before cutover, we rehearsed the data migration against a production snapshot in staging, compared balances using scripts that exercised asset and balance movements, and had the team test uploads, purchases, tips, messaging, search, and filtering on a preview deployment.
 
-![MintStars press-and-hold confirmation in progress for a USDC withdrawal](../assets/mintstars/mintstars-withdrawal-crypto-hold.png)
+The launch also depended on a new payment-provider integration. I worked directly with Coinflow on the capabilities we needed, but the complete funding and payout flows came together too close to launch. Infrastructure integration issues during the move from GCP hosting to Vercel then extended the overnight cutover to roughly six hours, against about 90 minutes planned.
 
-Behind that interaction, the application created a withdrawal record, submitted the USDC transfer, waited for chain confirmations through a retryable Inngest workflow, and then recorded the withdrawal transaction and user balance change together. Operational paths existed to investigate failures, mark outcomes manually when necessary, and speed up or resubmit a stuck Polygon transaction.
+We completed the migration, but I had underestimated the integration buffer. My main lesson was to bring complete provider flows and migration rehearsals forward in the schedule, with automated regression coverage for core payment flows. Our scripted checks and manual staging QA were useful; they needed more time and stronger automated coverage before that release.
 
-## Creator analytics from financial events
+## Business context
 
-The creator dashboard aggregated subscriptions, tips, direct sales, and resales into a seven-day earnings view, alongside total earnings, sales, subscriber count, and top customers. Missing days were filled explicitly so the chart retained a stable time scale even during quiet periods.
-
-The dashboard and transaction-history screenshots use representative sample data rendered through a development-only fixture mode. The presentation and data shapes come from the original application; the people, values, and content titles are synthetic.
-
-## Selected engineering problems
-
-- **Mixed payment sources.** Reconcile purchases funded by internal balance, external payment processing, or both without obscuring the final creator and platform amounts.
-- **Webhook idempotency.** Prevent a repeated provider event from becoming a repeated balance change.
-- **Atomic financial writes.** Keep the domain event, balances, fees, and transaction history aligned across related database updates.
-- **Irreversible payout UX.** Add appropriate friction and network-specific guidance without making withdrawals confusing.
-- **Operational recovery.** Make failed or delayed payment and blockchain operations visible and recoverable instead of silently leaving them between states.
-- **Unified reporting.** Present subscriptions, tips, sales, royalties, deposits, and withdrawals through a coherent creator-facing history.
+During my tenure, COO reporting showed roughly **12× growth in onboarded creators and 10× growth in monthly total sales volume**. These are approximate company-level figures from that period. Creator admission involved invitations or operations review; sales volume represents platform commerce, not MintStars' revenue. The figures provide context for the platform we supported rather than attributing that growth solely to engineering.
 
 ## Stack
 
-TypeScript · React · Next.js · tRPC · Prisma · PostgreSQL · Inngest · Coinflow · ethers · Polygon · USDC · Redis · Algolia · Sentry · Axiom
-
-## About this case study
-
-MintStars' source code and production data are private; no company source code is included here. The first two screenshots recreate the repo-era interface with clearly marked sample data. The withdrawal screenshots show live versions of flows I built; visual design may have evolved since my tenure.
-
-The architecture diagrams are intentionally simplified. They describe the responsibilities and system boundaries relevant to my work rather than every production integration or an exact deployment topology.
+TypeScript · React · Next.js · tRPC · Prisma · PostgreSQL · Redis · Inngest · Coinflow · Polygon/USDC · Firebase · API Video · Vercel · Sentry · Axiom
 
 ---
+
+MintStars' source code and production data are private. Screenshots recreate the interface using sample data; no company source code is included here.
 
 [Back to profile](../README.md)
