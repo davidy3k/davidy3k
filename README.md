@@ -14,15 +14,15 @@ Trading interfaces, real-time data architecture, server-rendered data infrastruc
 
 [View the live product](https://cielo.finance/) · [Read the case study](case-studies/cielo.md)
 
-### [MintStars](case-studies/mintstars.md)
+### [Self Financial](case-studies/self.md)
 
-**Creator subscriptions & financial infrastructure**
+**Consumer fintech**
 
-`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
+`React Native` · `TypeScript` · `GraphQL` · `Python` · `Objective-C` · `Swift` · `Java`
 
-Led a ground-up platform rewrite and built its internal financial infrastructure, including an atomically enforced transaction and movement ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+On a three-engineer mobile team, helped replace separate native iOS and Android applications with a ground-up React Native product. Built hybrid WebView onboarding, maintained cryptographic biometric authentication, and delivered native performance, security, and core financial account flows during three years of rapid company growth.
 
-[Read the case study](case-studies/mintstars.md)
+[View the live product](https://www.self.inc/) · [Read the case study](case-studies/self.md)
 
 ### [Joust](case-studies/joust.md)
 
@@ -34,6 +34,17 @@ Co-founder and engineer. Built the product full-stack, including market lifecycl
 
 [Read the case study](case-studies/joust.md)
 
+### [MintStars](case-studies/mintstars.md)
+
+**Creator subscriptions & financial infrastructure**
+
+`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
+
+Led a ground-up platform rewrite and built its internal financial infrastructure, including an atomically enforced transaction and movement ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+
+[Read the case study](case-studies/mintstars.md)
+
+
 ### [Spike Art Magazine](https://www.spikeartmagazine.com/)
 
 **Editorial publishing platform**
@@ -44,15 +55,6 @@ A ground-up replacement for a failing legacy publishing system: custom CMS, arch
 
 [View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
 
-### [Self Financial](case-studies/self.md)
-
-**Consumer fintech**
-
-`React Native` · `TypeScript` · `GraphQL` · `Python` · `Objective-C` · `Swift` · `Java`
-
-On a three-engineer mobile team, helped replace separate native iOS and Android applications with a ground-up React Native product. Built hybrid WebView onboarding, maintained cryptographic biometric authentication, and delivered native performance, security, and core financial account flows during three years of rapid company growth.
-
-[View the live product](https://www.self.inc/) · [Read the case study](case-studies/self.md)
 
 ---
 
