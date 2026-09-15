@@ -1,5 +1,3 @@
-**Full-stack product engineer building ambitious web products.**
-
 Most of the production code I’ve shipped lives in private commercial repositories. This profile collects selected work and technical case studies.
 
 ## Selected work
@@ -40,7 +38,7 @@ Helped rebuild Self's iOS and Android apps in React Native and contributed exten
 
 `Next.js` · `JavaScript` · `Sanity` · `Algolia` · `Python`
 
-Rebuilt Spike’s publishing platform with a friend, implementing Bureau Borsche’s design in Next.js and Sanity Studio. Owned the legacy Drupal archive scraping and transformation and Algolia integration; shared the frontend and editorial tooling work.
+Rebuilt Spike’s publishing platform with another engineer, implementing Bureau Borsche’s design in Next.js and Sanity Studio. Owned the legacy Drupal archive scraping and transformation and Algolia integration; shared the frontend and editorial tooling work.
 
 [View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
 
