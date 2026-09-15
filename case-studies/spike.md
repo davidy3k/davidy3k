@@ -1,95 +1,79 @@
 # Spike Art Magazine
 
-### Publishing platform for an independent contemporary art magazine
+### Rebuilding an editorial archive for a new publishing platform
 
-**Freelance Software Engineer**
+**Role:** Freelance Software Engineer
+
+**Dates:** March–November 2023, with occasional support through late 2024
+
+**Scope:** Archive migration and search ownership; shared frontend and Sanity Studio implementation
 
 [View the live site](https://www.spikeartmagazine.com/)
 
-![Spike Art Magazine homepage splash with a painterly full-screen composition](../assets/spike/spike-home-splash.jpeg)
+Spike is an independent contemporary art magazine with a glossy print edition and an international readership. It is also a publication I care about personally: my friends read it, and many write for it. Preserving its archive and helping it continue publishing made this a particularly meaningful project.
 
-Spike is an independent contemporary art magazine and publishing platform with a highly distinctive visual identity.
+Bradley Griffith and I rebuilt its legacy Drupal website as a Next.js application with **Sanity Studio and a custom content model**, implementing **Bureau Borsche’s** redesign. Bradley established the base project and patterns from a publishing-site template he had developed for previous clients. I owned all of the archive scraping and transformation and the Algolia integration; we shared the work of building layouts, article templates, and Studio features.
 
-I rebuilt its website and publishing infrastructure, replacing a failing legacy PHP system with a modern **Next.js application and custom Sanity CMS**. My role covered engineering the public site, content architecture, legacy archive migration, search infrastructure, and the publishing system used by the editorial team.
+My archive migration used the published website as the extraction source: I scraped articles, transformed their text and media into structured Sanity content, and helped carry legacy links into the replacement platform.
 
-_Web design and visual identity by Bureau Borsche._
+![Spike article opening with split artwork and oversized editorial headline](../assets/spike/spike-article.jpeg)
 
-## Rebuilding the platform
+_Screenshots show later public-site content, including 2025–2026 articles; they are not launch captures. Web design and visual identity by Bureau Borsche._
 
-The project was both a product rebuild and a content migration. I wrote tooling to extract the existing archive from the legacy site, transform it into a new structured content model, and migrate it into Sanity. The new platform connected that editorial system to a Next.js frontend through GraphQL, with Algolia supporting search and discovery.
+## Recovering the archive through the published site
+
+The Drupal installation was difficult to operate and recover, and its database was too large to work with on my laptop. Understanding the legacy data model well enough to extract the archive directly was another obstacle. I chose to reconstruct the articles from their published pages.
+
+I wrote a staged migration: crawl the article index, scrape individual pages, then normalize the extracted content into Sanity import records. That separated extraction from transformation, so the saved material could be cleaned up without repeating every request to the old site.
+
+The difficult part was converting years of inconsistent markup into editable content. The tooling resolved author and magazine-issue references, converted HTML into Sanity text blocks and pull quotes, checked image availability, and reconstructed media placement inside article bodies. Follow-up scripts populated introductions and metadata. Image checks and error logging helped identify exceptions; irregular markup still required cleanup.
 
 ```mermaid
 flowchart LR
-    A[Legacy PHP site] --> B[Scrape and extract]
-    B --> C[Normalize and transform]
-    C --> D[Structured content]
-    D --> E[Sanity CMS]
-    E --> F[GraphQL content layer]
-    F --> G[Next.js frontend]
-    E --> H[Algolia index]
-    H --> I[Search and discovery]
+    A[Published Drupal pages] --> B[Saved article extracts]
+    B --> C[Normalize text and media]
+    C --> D[Sanity import records]
+    D --> E[Sanity Studio]
+    E --> F[Next.js pages]
+    E --> G[Algolia search]
 ```
 
-_Conceptual migration and publishing flow._
+_The published archive became structured material that editors could continue working with in the new platform._
 
-![Spike homepage area showing events, issue promotion, and mixed editorial content](../assets/spike/spike-home-alt-area-tablet.jpeg)
+Legacy links also needed a route forward. The replacement site handles old query-string URLs and contributor and subject paths, directing readers to new article and author routes or search. Where an article slug cannot be resolved, search provides a recovery path.
 
-## Structure beneath visual specificity
+## Editorial flexibility within a shared model
 
-Spike's visual identity deliberately resists the uniformity of a conventional publishing site. Articles, magazine issues, events, archive pages, and editorial features can have substantially different compositions while still belonging to the same publication.
+The publishing system supports distinct article openings, media groups, pull quotes, events, and magazine issues. Editors can select presentation options while keeping authors, categories, and publication details structured.
 
-The engineering challenge was to preserve that specificity without building every page as a one-off. The frontend and content architecture supported:
+One content-model detail I changed was separating the article's online publication date from its relationship to a print issue. An article can belong to a magazine issue while still needing its own web date for sorting and display. I made that date consistently available and required in Studio.
 
-- distinct image and typography treatments
-- multiple article and feature formats
-- longform editorial content
-- magazine issues and events
-- author, category, and archive relationships
-- responsive layouts that retained the character of the desktop design
-
-These two article openings demonstrate the range: both are structured editorial content, but their visual hierarchy and composition are intentionally different.
+The frontend uses both GraphQL and Sanity's GROQ query language. Article loading uses GROQ to resolve references embedded in the body, including advertising content, alongside the article's text and media.
 
 <p>
-  <img src="../assets/spike/spike-article.jpeg" width="49%" alt="Spike article with split image and oversized editorial headline" />
-  <img src="../assets/spike/spike-article-3.jpeg" width="49%" alt="Spike article with centered metadata, oversized display type, and artwork" />
+  <img src="../assets/spike/spike-article-3.jpeg" width="72%" alt="Desktop opening of Those Torsos of Apollo with centered metadata and a wide artwork" />
+  <img src="../assets/spike/spike-article-mobile-2.jpeg" width="23%" alt="The same article opening on mobile, with the headline and metadata wrapping above the artwork" />
 </p>
 
-## Migrating the archive
+_The same article opening at desktop and mobile widths: typography, metadata, and imagery recompose around the viewport._
 
-The existing publication archive could not be discarded with the legacy platform. I built migration tooling to scrape the old site, extract its editorial material, normalize inconsistent legacy content, and transform it for the new structured model in Sanity.
+## Search and page delivery
 
-That work allowed the redesign to launch on a maintainable foundation without severing the magazine's history. The details here stay intentionally high-level because the source system, migration code, and production content model are private.
+I integrated Algolia with an initial archive import and a Sanity webhook handler for subsequent article changes. The index includes headlines, introductions, authors, tags, and publication metadata, supporting keyword search and the archive's discovery controls.
 
-## Search and discovery
+![Spike search results with category, year, author, and list-view controls](../assets/spike/spike-search.jpeg)
 
-![Spike search results organized by author with category, year, and view controls](../assets/spike/spike-search.jpeg)
+The Next.js application generates article pages statically, with on-demand generation for new paths and periodic regeneration for editorial updates. This lets the platform serve generated pages while keeping publishing in Sanity. Updates can appear after regeneration rather than immediately on every request.
 
-I integrated Algolia to make the migrated archive fast to search and navigate. The experience connects free-text search with the publication's broader discovery paths without exposing readers to the complexity of the underlying archive.
+The rebuild moved the archive into an editable publishing system with independent search and page delivery. The new site no longer depends on the legacy Drupal installation to publish and serve those articles.
 
-## Beyond articles
+## Stack and attribution
 
-![Spike events archive showing a structured grid of talks, readings, and launch events](../assets/spike/spike-events.jpeg)
+JavaScript · React · Next.js · Sanity · GraphQL / GROQ · Algolia · Vercel · Python migration tooling
 
-The platform also supports structured content beyond individual articles, including events, magazine issues, authors, categories, and archive relationships. These content types needed their own presentation while remaining connected to one editorial and publishing system.
+Web design and visual identity by Bureau Borsche. Engineering by Bradley Griffith and David Yoakum.
 
-## Responsive editorial design
-
-Mobile was not desktop made narrow. Layout, hierarchy, typography, metadata, captions, and media had to recompose into a coherent reading experience while preserving the site's character.
-
-<p>
-  <img src="../assets/spike/spike-article-3-body.jpeg" width="72%" alt="Spike longform article body with editorial imagery and captions on desktop" />
-  <img src="../assets/spike/spike-article-mobile-2.jpeg" width="23%" alt="The same Spike article recomposed for a mobile viewport" />
-</p>
-
-## Stack
-
-TypeScript · React · Next.js · Sanity · GraphQL · Algolia · Vercel
-
-## Attribution and source
-
-Web design and visual identity were created by Bureau Borsche. I was responsible for the engineering, implementation, platform architecture, migration, and supporting infrastructure described above.
-
-The production source code is private. This case study contains public screenshots and technical documentation, not proprietary source code.
+The production source is private. This case study summarizes implementation decisions and uses public-site screenshots.
 
 ---
 

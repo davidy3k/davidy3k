@@ -34,6 +34,16 @@ Helped rebuild Self's iOS and Android apps in React Native and contributed exten
 
 [View the live product](https://www.self.inc/) · [Read the case study](case-studies/self.md)
 
+### [Spike Art Magazine](case-studies/spike.md)
+
+**Editorial publishing platform**
+
+`Next.js` · `JavaScript` · `Sanity` · `Algolia` · `Python`
+
+Rebuilt Spike’s publishing platform with a friend, implementing Bureau Borsche’s design in Next.js and Sanity Studio. Owned the legacy Drupal archive scraping and transformation and Algolia integration; shared the frontend and editorial tooling work.
+
+[View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
+
 ### [Joust](case-studies/joust.md)
 
 **Social prediction markets**
@@ -43,16 +53,6 @@ Helped rebuild Self's iOS and Android apps in React Native and contributed exten
 Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
 
 [Read the case study](case-studies/joust.md)
-
-### [Spike Art Magazine](https://www.spikeartmagazine.com/)
-
-**Editorial publishing platform**
-
-`Next.js` · `TypeScript` · `Sanity` · `GraphQL` · `Algolia`
-
-A ground-up replacement for a failing legacy publishing system: custom CMS, archive migration, search, content architecture, and high-fidelity frontend implementation for an independent contemporary art magazine.
-
-[View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
 
 
 ---
