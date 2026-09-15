@@ -50,7 +50,7 @@ Rebuilt Spike’s publishing platform with a friend, implementing Bureau Borsche
 
 `Next.js` · `TypeScript` · `wagmi` · `viem` · `Prisma` · `PostgreSQL` · `Inngest`
 
-Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
+Co-founded a prediction-market app for communities with existing trust and launched on Abstract for friends and family in October 2025. Owned the web application, including wallet flows, recoverable transaction intents, and settlement records; a cofounder owned the smart contracts. Currently reworking the app, with the public site in maintenance.
 
 [Read the case study](case-studies/joust.md)
 
