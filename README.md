@@ -44,13 +44,15 @@ A ground-up replacement for a failing legacy publishing system: custom CMS, arch
 
 [View the live site](https://www.spikeartmagazine.com/) · [Read the case study](case-studies/spike.md)
 
-### [Self Financial](https://www.self.inc/)
+### [Self Financial](case-studies/self.md)
 
 **Consumer fintech**
 
-`React Native` · `React` · `TypeScript` · `GraphQL` · `Node.js` · `PostgreSQL`
+`React Native` · `TypeScript` · `GraphQL` · `Python` · `Objective-C` · `Swift` · `Java`
 
-Built across mobile, web, GraphQL, and banking systems during three years of hypergrowth. Contributed to the React Native flagship app, which reached 1M+ downloads and a 4.9-star rating.
+On a three-engineer mobile team, helped replace separate native iOS and Android applications with a ground-up React Native product. Built hybrid WebView onboarding, maintained cryptographic biometric authentication, and delivered native performance, security, and core financial account flows during three years of rapid company growth.
+
+[View the live product](https://www.self.inc/) · [Read the case study](case-studies/self.md)
 
 ---
 
