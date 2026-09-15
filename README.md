@@ -4,13 +4,13 @@ Most of the production code I’ve shipped lives in private commercial repositor
 
 ## Selected work
 
-### [Cielo Finance](https://cielo.finance/)
+### [Cielo Finance](case-studies/cielo.md)
 
 **Real-time onchain analytics & trading**
 
 `Next.js` · `TypeScript` · `tRPC` · `WebSockets` · `Redis` · `TradingView` · `OpenTelemetry`
 
-Trading interfaces, real-time data architecture, server-rendered data infrastructure, performance, and full-stack observability.
+Senior Software Engineer, March 2025–August 2026. Built the Solana terminal’s historical/live chart datafeed and shared real-time client layer, including replay and gap recovery. Owned server-side data access with session-aware tRPC streaming and browser/server observability with OpenTelemetry and SigNoz.
 
 [View the live product](https://cielo.finance/) · [Read the case study](case-studies/cielo.md)
 

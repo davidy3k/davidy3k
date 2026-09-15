@@ -1,119 +1,77 @@
 # Cielo Finance
 
-### Real-time onchain analytics & trading
+### Keeping historical data, live trades, and chart interactions in sync
 
-**Senior Software Engineer**
+**Senior Software Engineer · March 2025–August 2026**
+
+**Scope:** Solana trading terminal, real-time client architecture, server-side data access, and observability
 
 [View the live product](https://cielo.finance/)
 
-![Cielo trading terminal showing a live chart, trade overlays, order controls, and an open limit order](../assets/cielo/cielo-terminal-apeonfone-open-limit-buy.png)
+Cielo combines onchain wallet analytics with trading tools. I built the terminal’s TradingView datafeed and chart-state integration, the shared real-time client layer, the tRPC data-access layer, and browser/server observability.
 
-Cielo is a data-intensive crypto analytics platform for tracking onchain activity, analyzing wallets, and acting on that information through integrated trading tools.
+I worked with a frontend technical lead and a UI-focused engineer, with shared QA support. The application already had an established foundation; we shipped the terminal together, with my work concentrated on how data and user actions move through it.
 
-I work across the product stack, with a particular focus on **real-time interfaces, frontend architecture, data infrastructure, trading UX, performance, and observability**.
+![Cielo Solana terminal showing live candles, trade markers, and the Trades table](../assets/cielo/cielo-chart-marks-trades.png)
 
-## Real-time trading terminal
+*Chart markers and the Trades table present activity from the shared live-data layer.*
 
-I helped build and ship a trading terminal that brings interactive TradingView charts, live trade overlays, wallet and market information, and swap and order execution into a single workspace.
+## Joining historical candles to live swaps
 
-The interface reconciles several forms of state at once:
+The chart starts with historical OHLCV data—open, high, low, close, and volume—but builds its live candles from individual swaps. The same swap stream also feeds the trade list and other consumers. A chart can therefore attach after another component has already started receiving events, while its historical snapshot is still loading.
 
-- historical, query-backed data
-- continuously arriving live events
-- local interaction state
-- wallet and trading state
-- rapidly invalidating market data
+I built the handoff between those sources. The historical response seeds the candle accumulator; a supplied stream cursor identifies swaps already included in the snapshot. Recent events retained by the shared subscription provider can then be replayed to a later consumer. The accumulator orders incoming swaps, excludes events covered by the snapshot cursor, and updates candles for the selected interval and display mode.
 
-The engineering challenge was not simply displaying a stream. It was keeping a high-frequency application predictable and responsive while its underlying data changed from several directions.
+Replay alone is not always enough. When the chart cannot establish coverage between its snapshot and live events, it buffers incoming swaps and fetches a bounded set of recent trades over HTTP. It merges and deduplicates those events before continuing. If coverage remains insufficient, it requests a fresh chart load.
 
-## Real-time client architecture
+That choice also shapes recovery after a backgrounded tab returns: catch up over completed candles for a shorter interruption, or reload after a long absence. Using completed candles avoids combining a partial historical candle with live accumulation for the same interval.
 
-![Cielo live feed showing streaming onchain trades and market filters](../assets/cielo/cielo-feed.png)
+## One stream, different update policies
 
-I built the client-side data layer that connects WebSocket subscriptions to product interfaces. It handles event queuing and buffering, connection health, query and cache invalidation, and reconciliation between live events and query-backed state.
+Centrifugo and its JavaScript client supply the transport and subscription recovery signals. I built the application layer above them: shared consumers, event queues, replay, connection health, query-cache updates, and recovery callbacks.
 
-This layer sits between the raw event stream and the React application, turning a continuously changing network feed into state the product can reliably consume.
+The update policy depends on what the interface needs:
 
-```mermaid
-flowchart LR
-    A[WebSocket event stream] --> B[Event queue]
-    B --> C[Normalize and reconcile]
-    C <--> D[Query cache]
-    C --> E[Application state]
-    D --> E
-    E --> F[React interfaces]
-    G[Connection health] --> E
-```
+- **Scalar values**, such as suggested transaction fees, can coalesce to the latest value instead of rendering every intermediate update.
+- **Trade lists** batch events, merge them by identity, and keep the displayed rows ordered. Pausing the list buffers updates until the user resumes.
+- **Hidden tabs** retain bounded buffers. On return, the application applies recent events and refreshes the query when elapsed time or overflow makes the retained data insufficient.
 
-_Conceptual data flow; this is not a representation of Cielo's proprietary internal architecture._
+These policies keep buffering finite while giving the application an explicit path back to a current snapshot. For a swap subscription that cannot recover, that path refetches the current query data and resubscribes from its stream position when available.
 
-## Server-side data architecture
+## Keeping chart drawings consistent with product state
 
-I rebuilt significant parts of the data-fetching layer around server-side rendering, batched streaming, Redis caching, and composable middleware. This work improved how quickly and consistently interfaces could receive data while creating a clearer place to control request behavior.
+TradingView maintains its own widget state. I built the integration that keeps order targets and trade overlays aligned with application state across price/market-cap and USD/SOL display modes.
 
-It also strengthened the application boundary: privileged upstream access and previously browser-exposed API credentials moved behind controlled server infrastructure.
+For limit orders, the form owns the target and the chart reflects it. I kept the line read-only on the chart because dragging it across widget scale modes could produce an incorrect target value. The shared target state preserves the user’s reference point as live market values change.
 
-```mermaid
-flowchart LR
-    A[Browser request] --> B[Next.js server boundary]
-    B --> C[Composed middleware]
-    C --> D[Server-side data access]
-    D <--> E[(Redis cache)]
-    D --> F[Privileged upstream APIs]
-    B --> G[SSR and batched streaming]
-    G --> A
-```
+Trade markers need similar care when filters change. The integration tracks overlay revisions and marker identities, explicitly clearing removed marks before refreshing the chart so that old selections do not remain visible.
 
-_Conceptual request path, simplified to describe the engineering boundary rather than proprietary implementation details._
+![Cielo Limit form showing a market-cap target matched by the yellow line on the chart](../assets/cielo/cielo-chart-limit-order.png)
 
-## Product breadth
+*The form’s target is reflected by the yellow chart line. This current-product capture shows an ETH-denominated market; my contribution described here covered the Solana terminal.*
 
-The same data and interaction constraints appear across Cielo's product: dense market discovery views, wallet analytics, portfolio information, and trading workflows. My work spans the shared frontend and data infrastructure behind these kinds of interfaces; the screenshots below show product breadth rather than claiming sole ownership of each feature.
+## Streaming responses without losing session renewal
 
-<p>
-  <img src="../assets/cielo/cielo-trending.png" width="49%" alt="Cielo trending view with dense real-time market data" />
-  <img src="../assets/cielo/cielo-profile-pnl.png" width="49%" alt="Cielo wallet profile with portfolio and profit-and-loss analytics" />
-</p>
+I built server-side data access around Next.js and tRPC, including server-prefetched queries, Redis caching, and reusable procedure middleware for tracing, caching, and access checks. Authenticated upstream requests run behind the server boundary, keeping upstream credentials server-side.
 
-## Responsive, data-dense interfaces
+For query batches, tRPC streaming lets individual results reach the client as they complete. Session renewal introduces a constraint: once a streaming response starts, its headers cannot be changed to persist a renewed session cookie.
 
-On smaller screens, dense market information cannot simply be squeezed into a narrower table. Priority, grouping, navigation, and trading actions have to be recomposed for touch while retaining the context needed to make decisions.
+I made transport selection aware of session expiry. Queries normally use batch streaming, then switch to ordinary batching near renewal so the response can carry updated session headers. On the server, shared cached refresh results and locking coordinate concurrent requests to limit duplicate renewals, with bounded waiting and fallback paths.
 
-<p align="center">
-  <img src="../assets/cielo/cielo-trending-mobile.png" width="360" alt="Cielo mobile trending view with condensed market metrics and trading actions" />
-</p>
+This delivered server-prefetched data, cached responses, and incremental batch delivery. There was no comparable before/after performance baseline, so I do not attach a measured speedup to the work.
 
-## Observability across boundaries
+## Instrumenting the boundaries
 
-I implemented client- and server-side observability using OpenTelemetry and Sentry. Traces, logs, metrics, and errors were designed to make failures diagnosable across browser, server, and upstream boundaries rather than leaving each layer as an isolated source of symptoms.
+I implemented OpenTelemetry traces, logs, and metrics in SigNoz, alongside Sentry error tracking. Custom instrumentation links server rendering to browser hydration and covers tRPC procedures, session renewal, Redis operations, and live-update processing.
 
-```mermaid
-flowchart LR
-    A[Browser interactions] --> C[OpenTelemetry instrumentation]
-    B[Server requests and jobs] --> C
-    D[Upstream dependencies] --> C
-    C --> E[Traces, logs, and metrics]
-    A --> F[Sentry errors]
-    B --> F
-    E --> G[Cross-boundary diagnosis]
-    F --> G
-```
-
-## Selected engineering problems
-
-- **Live and cached state coherence.** Define how events enter the application, when cached queries become stale, and which source wins during reconciliation.
-- **Failure as application state.** Surface connection health and reconnection behavior explicitly so a stale feed does not look authoritative.
-- **High-density rendering.** Keep frequently updating interfaces responsive without sacrificing the context traders depend on.
-- **End-to-end diagnosis.** Carry enough context across browser, server, and upstream boundaries to locate failures rather than only observe their final symptom.
+The recovery paths record context such as replay coverage, catch-up progress, and fallback reasons. Sampling and batching control telemetry volume in the high-frequency client. This gives the application a shared diagnostic trail across its browser and server layers; backend services did not yet share a unified observability system during my tenure.
 
 ## Stack
 
-TypeScript · React · Next.js · tRPC · WebSockets · Redis · TradingView · OpenTelemetry · Sentry
-
-## About this case study
-
-Cielo's application and source code are proprietary; no company source code is included here. The screenshots, conceptual diagrams, and descriptions document publicly visible product work and the engineering areas I personally worked on. They do not disclose Cielo's internal implementation.
+TypeScript · React · Next.js · tRPC · TanStack Query · Centrifugo / Centrifuge.js · Redis · TradingView · OpenTelemetry · SigNoz · Sentry
 
 ---
+
+*Cielo’s source is proprietary. This case study describes my contribution at the application level; no company source code is included. My terminal work covered Solana during the dates above.*
 
 [Back to profile](../README.md)
