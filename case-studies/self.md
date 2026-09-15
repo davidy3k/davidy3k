@@ -1,142 +1,76 @@
 # Self Financial
 
-### Rebuilding a consumer-fintech mobile application
+### Rebuilding a consumer-fintech app across web and mobile
 
-**Software Engineer · 2019–2022**
+**Software Engineer · October 2019–November 2022**
 
-Self Financial offers long-running credit-building products whose mobile experience has to make payments, balances, account status, and sensitive personal information understandable without weakening the controls around them.
+**Scope:** React Native rewrite, shared UI components, WebView onboarding, financial account flows, and native integrations
 
-I joined when the company had roughly 30 employees and worked there through a period of growth to more than 300. On a three-engineer mobile team, I helped replace separate Kotlin and Objective-C applications with a new React Native product, built core customer flows, and contributed across the GraphQL and Python services behind them.
+Self Financial helps customers build credit through a Credit Builder Account and secured credit card. I helped replace its separate iOS and Android applications with a redesigned React Native app, while also shipping features in the existing web application.
 
-During my tenure, the flagship application passed **one million downloads** and held a **4.9-star rating**.
+I was one of two engineers doing most of the full-time implementation on the mobile team. Our engineering manager and tech lead also contributed code and provided substantial review. My work included shared UI primitives, onboarding integration, autopay, Plaid account linking, and native modules for date selection, deep links, push routing, and app-state masking.
 
-## Replacing two native applications at once
+## A new interface around established product behavior
 
-The mobile rewrite began in a fresh codebase and shipped as a replacement release rather than a gradual migration. At the same time, we worked with an outside design agency on a full visual redesign.
+The rewrite began around the time I joined. Our tech lead evaluated cross-platform options and selected React Native and the supporting tooling. I initially worked on the web application while product decisions and designs from an outside design firm were taking shape, then moved primarily to mobile. We shipped the replacement app around late summer 2020.
 
-That made the project more than a framework change. The new application had to reproduce the behavior of two mature products, preserve access to existing accounts, and introduce a consistent experience across iOS and Android. Financial workflows also carried a different cost of failure from ordinary application screens: stale state, a lost session, or an ambiguous payment status could prevent a customer from managing an active loan or secured card.
+The existing web application already contained much of the product behavior we needed. It was also a large codebase with many contributors, accumulated technical debt, and predominantly class-based React components. Rebuilding the mobile app gave us an opportunity to carry that behavior into smaller function components using hooks and context. We used Apollo for server-data caching and kept additional global application state limited.
 
-```mermaid
-flowchart LR
-    A[Marketing links] --> B[Native deep-link router]
-    C[Push notifications] --> B
-    B --> D[React Native application]
-    D <--> E[WebView onboarding]
-    D <--> F[Native capability modules]
-    D <--> G[GraphQL API]
-    G <--> H[Python product services]
-    H <--> I[Banking, identity, and payment systems]
-```
+I contributed extensively to a UI primitive component library used by both web and mobile. That work translated the design firm's visual system into reusable building blocks for the product screens. Alongside the new layouts, the app incorporated animations, gestures, and responsive interactions that made it feel substantially more polished than its predecessor.
 
-_Simplified view of the mobile architecture and the boundaries most relevant to my work._
+The work combined reuse at two levels: established financial-product behavior from the web application and shared interface components for the redesigned experience.
 
-React Native gave us one product codebase, but we treated it as the coordinating application layer rather than insisting that every problem be solved in JavaScript. Security-sensitive, performance-sensitive, and deeply platform-specific behavior remained native where that produced a safer or more reliable result.
+## Keeping onboarding on the web
 
-## Onboarding across a WebView boundary
+Onboarding needed a different release cadence from the mobile app. The business continually tested and adjusted its acquisition funnel, and those experiments could not depend on an app-store review for every change. We embedded the web onboarding flow in a WebView so it could continue to evolve independently.
 
-Onboarding remained a web experience embedded inside the application. A dedicated web team continually tested and refined that funnel, and its complex identity and third-party integrations were not straightforward to reproduce in React Native. Reusing it allowed the same acquisition flow to serve both web and mobile customers.
+Login and registration lived in the app. If the customer's account data showed incomplete onboarding, the app opened the web flow. That customer was already authenticated, but the WebView had its own isolated browser session. Making the transition feel continuous required work on both sides of that boundary.
 
-The difficult part was making an isolated browser context behave like part of one authenticated application. We had to establish the customer session inside the WebView, pass the necessary application state into it, receive progress and completion state back, and then reconcile that result with the surrounding native navigation.
+### Coordinating session handoff and page startup
 
-The React Native bridge at the time was asynchronous, while cookies, redirects, application lifecycle changes, and WebView readiness could all advance independently. Timing and ordering failures could leave onboarding waiting on state that existed on the other side of the boundary. Much of the work was therefore not visual; it was establishing a dependable session handoff and message protocol between three stateful environments:
+One failure occurred when the web application's authentication check ran before the app had supplied the session to the WebView. The web flow interpreted the missing session as a logged-out customer and redirected them to web login.
 
-```mermaid
-sequenceDiagram
-    participant N as Native shell
-    participant R as React Native state
-    participant W as Web onboarding
-    participant S as Application services
+I worked on coordinating session delivery with the web application's startup behavior so it could distinguish a pending handoff from a genuinely missing session. The important constraint was ordering: opening the page and supplying authentication could not be treated as unrelated operations. Resolving it required changes in both the app integration and the web flow.
 
-    N->>R: Restore authenticated application
-    R->>W: Establish session and initial context
-    W->>S: Run onboarding and vendor-backed steps
-    W-->>R: Report progress, completion, or failure
-    R->>S: Refresh canonical account state
-    R->>N: Route to the appropriate product screen
-```
+### Handling completion and external redirects
 
-Deep links added another entry path into that state machine. Marketing campaigns and push notifications needed to do more than open the application: they had to restore or establish the correct session, preserve the intended destination, and route customers into onboarding, payments, notifications, or a specific account state.
+The app also needed to recognize when onboarding had finished and return the customer to the appropriate mobile experience. We worked with messages from the embedded page and WebView navigation events to communicate that transition. These were integration points shared with a web application that other engineers continued to change.
 
-## Native modules for security and performance
+Plaid added another navigation boundary: its embedded flow could initiate an OAuth redirect inside the WebView. I worked on intercepting the relevant navigation requests, extracting the redirect parameters, and passing them into the integration so the flow could continue.
 
-Several important requirements exceeded what the React Native ecosystem provided reliably at the time. I built several native integrations in Objective-C, Swift, and Java behind a consistent TypeScript-facing interface, and maintained the team's custom biometric library after its initial authorship.
+Getting this working required iteration across iOS, Android, and different platform versions. After we worked through the session and navigation issues, onboarding became a dependable part of the app experience. Keeping the funnel on the web preserved the business's ability to experiment quickly, while the mobile integration handled the transitions around it.
 
-| Boundary | Why it was native |
+## Financial flows and native modules
+
+I implemented autopay management for both credit-building products and Plaid account linking, along with account, profile, settings, and payment-related interfaces. I also worked regularly in the web application, often implementing corresponding features as I worked on mobile.
+
+Some of my app work crossed into native code:
+
+| Integration | My contribution |
 | --- | --- |
-| Biometric authentication | Authentication needed a cryptographic proof created with a platform-protected device key, not a client-provided boolean saying that biometrics had passed. |
-| Secure local storage | Tokens and sensitive application state belonged in iOS Keychain and Android Keystore rather than plaintext asynchronous storage. |
-| App-state masking | Financial information had to disappear immediately when the application entered the background or appeared in the system app switcher. |
-| Deep links and push routing | Platform entry points had to resolve reliably into the correct React Native navigation and account state. |
-| Interactive charts | Passing continuous touch coordinates across the bridge to update JavaScript-rendered SVGs did not provide acceptable interaction performance. |
-| Date controls | Large date ranges and product-specific behavior performed poorly in JavaScript, while the available Android component was not sufficiently stable or visually consistent. |
+| Date selection | Authored the native date picker used in autopay. |
+| Deep links and push routing | Authored native integrations that routed external entry points into the app. |
+| App-state masking | Authored native behavior to obscure sensitive account information when the app entered the background or appeared in the app switcher. |
 
-### Cryptographic biometric authentication
+I also made small contributions to the existing biometric authentication library.
 
-The biometric library used public-key cryptography rather than treating a successful Face ID or fingerprint prompt as sufficient proof on its own.
+Our team maintained the GraphQL server supporting the clients. I added or updated endpoints when features needed them. My contributions to the underlying Python services were minor; most of my implementation work was in the web and mobile applications.
 
-```mermaid
-sequenceDiagram
-    participant U as Customer
-    participant A as Mobile application
-    participant K as Secure Enclave or Keystore
-    participant S as Authentication service
+## Shipping with a growing engineering team
 
-    U->>A: Enroll in biometric login
-    A->>K: Generate public/private key pair
-    K-->>A: Return public key and protect private key
-    A->>S: Register public key
-    U->>A: Authenticate later
-    A->>K: Request biometric-gated signature
-    K-->>A: Return cryptographic signature
-    A->>S: Submit signature
-    S->>S: Verify with registered public key
-    S-->>A: Authorize verified customer
-```
+I participated in the department's rotating release-manager role for biweekly platform releases, coordinating staging builds, peer QA, fixes, and deployments across the web application, GraphQL server, and changed backend services.
 
-The private key remained protected on the device. A successful biometric prompt unlocked its use to create a cryptographic signature, and the server verified that signature using the registered public key before authorizing the customer. This moved the security decision away from a spoofable client response and into a server-verifiable protocol.
+Mobile releases followed a separate cadence because of store submission and review. We used TestFlight and manual regression checks, bringing in other engineers for broader validation of larger changes. This made release preparation and testing part of everyday implementation work.
 
-## Owning customer-facing financial flows
-
-I owned or made substantial contributions to flows across both the Credit Builder Account and secured credit card, including:
-
-- Autopay management for both products
-- Plaid account linking
-- Profile, settings, and payment-method management
-- Live customer support
-- Deep-link and push-notification destinations
-- Product status, payment, and account-history interfaces
-
-The live-chat integration also crossed application boundaries. On the web, a third-party widget lived globally in an iframe and needed to carry the appropriate identity and conversation state as a customer moved between logged-out and authenticated experiences.
-
-My work was not limited to the clients. The core credit-builder and secured-card systems were mature Python services with complex state around loan maturation, payments, notifications, monitoring, and credit reporting. I made targeted changes there, exposed new product state through GraphQL, and followed full-stack defects across the client, API, and underlying service when the boundary itself was the problem.
-
-## Coordinating platform and mobile releases
-
-Non-junior engineers rotated through release management for the company's biweekly platform release. As release manager, I worked across the engineering department to collect and tag the included work, coordinate staging builds and peer QA, follow up on fixes and retesting, and deploy every changed backend service, the GraphQL server, and the web application to production. Many parts of that process were driven by scripts the release manager ran directly.
-
-Mobile followed a separate cadence. Because each release also involved App Store or Play Store review, the small mobile team shipped ad hoc when a meaningful set of changes was ready rather than treating the application as part of the biweekly platform train. We generally owned our own QA and distributed TestFlight builds for validation. For larger changes, we recruited engineers from other teams to help work through full manual regression testing before submission.
-
-The core backend systems had thorough unit and integration coverage, while client regression testing initially depended more heavily on extensive manual checklists. A pull-request reviewer commonly served as the feature's QA owner. During my final year, the company hired a QA automation engineer and began automating more of that regression surface.
-
-Both release models made operational quality a shared engineering responsibility. Building a feature also meant making it testable, helping validate adjacent changes, and being available when a coordinated platform release or mobile submission exposed an interaction that no individual ticket captured.
-
-## Selected engineering lessons
-
-- **Cross-platform does not mean native-free.** A shared product layer was most effective when the team maintained clear escape hatches for platform security, performance, and lifecycle behavior.
-- **A WebView integration is a distributed state problem.** Authentication, readiness, navigation, and product state need an explicit protocol even when every component runs on one phone.
-- **Biometrics should unlock a credential, not become the credential.** Server-verifiable signatures provided a materially stronger authentication boundary than trusting a local success flag.
-- **Financial UX includes inactive and historical states.** Mature loans, closed cards, payment histories, and unavailable actions require as much product care as acquisition flows.
-- **Release work is engineering work.** Shared ownership of builds, regression testing, hotfixes, and production rollout kept a rapidly growing team close to the operational consequences of its changes.
+During my tenure, Self reported an Apple App Store average of **4.9 stars across more than 150,000 reviews** in September 2021. That is context for the product our team supported, rather than a measure of any individual's contribution. [Self's September 2021 announcement](https://www.globenewswire.com/news-release/2021/09/16/2298490/0/en/self-financial-raises-50m-in-series-e-funding-led-by-altos-ventures.html)
 
 ## Stack
 
-React Native · React · TypeScript · GraphQL · Python · Objective-C · Swift · Java · iOS Keychain · Android Keystore · PostgreSQL
+React Native · React · JavaScript / TypeScript · Apollo · GraphQL · Objective-C · Swift · Java
 
 ## About this case study
 
-Self Financial's source code and internal documentation are private; no company code is included here. The diagrams intentionally describe only the system boundaries relevant to my work, not Self's complete architecture or current implementation.
-
-The product has continued to evolve since my tenure. Current application screens are therefore not presented as exact representations of the interface I shipped.
+This account describes my work from 2019–2022, reconstructed from memory without access to Self's application source. Implementation details are kept at the level I can confidently describe. The product has continued to evolve since then.
 
 ---
 

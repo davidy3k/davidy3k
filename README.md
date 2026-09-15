@@ -28,9 +28,9 @@ Architected and led a project rewrite, moving everyday commerce from onchain tra
 
 **Consumer fintech**
 
-`React Native` · `TypeScript` · `GraphQL` · `Python` · `Objective-C` · `Swift` · `Java`
+`React Native` · `React` · `Apollo` · `GraphQL` · `JavaScript / TypeScript`
 
-On a three-engineer mobile team, helped replace separate native iOS and Android applications with a ground-up React Native product. Built hybrid WebView onboarding, maintained cryptographic biometric authentication, and delivered native performance, security, and core financial account flows during three years of rapid company growth.
+Helped rebuild Self's iOS and Android apps in React Native and contributed extensively to shared web/mobile UI components. Implemented WebView onboarding integration, autopay, Plaid account linking, and native modules for date selection, deep links, push routing, and app-state masking.
 
 [View the live product](https://www.self.inc/) · [Read the case study](case-studies/self.md)
 
