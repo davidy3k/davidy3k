@@ -20,7 +20,7 @@ Built the Solana terminal’s historical/live chart datafeed and shared real-tim
 
 `Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
 
-As Lead Software Engineer, architected and led the Next.js rewrite, moving everyday commerce from onchain transactions to internal balances. Built atomic purchase and payment records, integrated provider payments and Polygon USDC payouts, and mentored engineers into release and operational ownership.
+Architected and led a project rewrite, moving everyday commerce from onchain transactions to internal balances. Built atomic purchase and payment records, integrated crypto on and off ramps as well as Polygon USDC deposits and withdrawals, and mentored engineers into release and operational ownership.
 
 [Read the case study](case-studies/mintstars.md)
 
