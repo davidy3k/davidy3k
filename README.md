@@ -14,13 +14,15 @@ Trading interfaces, real-time data architecture, server-rendered data infrastruc
 
 [View the live product](https://cielo.finance/) · [Read the case study](case-studies/cielo.md)
 
-### MintStars
+### [MintStars](case-studies/mintstars.md)
 
 **Creator subscriptions & financial infrastructure**
 
 `Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
 
-Led a ground-up platform rewrite and built its internal financial infrastructure, including an auditable ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+Led a ground-up platform rewrite and built its internal financial infrastructure, including an atomically enforced transaction and movement ledger, stablecoin settlement, and crypto payment rails. During this period, the platform grew roughly 12× in creators and 10× in monthly revenue.
+
+[Read the case study](case-studies/mintstars.md)
 
 ### [Joust](case-studies/joust.md)
 
