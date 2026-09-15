@@ -14,6 +14,16 @@ Built the Solana terminal’s historical/live chart datafeed and shared real-tim
 
 [View the live product](https://cielo.finance/) · [Read the case study](case-studies/cielo.md)
 
+### [MintStars](case-studies/mintstars.md)
+
+**Creator subscriptions & financial infrastructure**
+
+`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
+
+As Lead Software Engineer, architected and led the Next.js rewrite, moving everyday commerce from onchain transactions to internal balances. Built atomic purchase and payment records, integrated provider payments and Polygon USDC payouts, and mentored engineers into release and operational ownership.
+
+[Read the case study](case-studies/mintstars.md)
+
 ### [Self Financial](case-studies/self.md)
 
 **Consumer fintech**
@@ -33,17 +43,6 @@ On a three-engineer mobile team, helped replace separate native iOS and Android 
 Co-founder and engineer. Built the product full-stack, including market lifecycle, wallet UX, onchain/offchain synchronization, and trusted-arbiter settlement.
 
 [Read the case study](case-studies/joust.md)
-
-### [MintStars](case-studies/mintstars.md)
-
-**Creator subscriptions & financial infrastructure**
-
-`Next.js` · `TypeScript` · `tRPC` · `Prisma` · `PostgreSQL` · `USDC`
-
-As Lead Software Engineer, architected and led the Next.js rewrite, moving everyday commerce from onchain transactions to internal balances. Built atomic purchase and payment records, integrated provider payments and Polygon USDC payouts, and mentored engineers into release and operational ownership.
-
-[Read the case study](case-studies/mintstars.md)
-
 
 ### [Spike Art Magazine](https://www.spikeartmagazine.com/)
 
