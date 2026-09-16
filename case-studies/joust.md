@@ -4,15 +4,19 @@
 
 **Co-founder & Full-stack Product Engineer · 2025–present**
 
-**Team:** Three founders; I owned the web application and established its engineering patterns. One cofounder owned the smart contracts and also contributed to the app; the other led product, design, and partnerships.
+**Scope:** Full-stack application architecture, wallet and contract integration, transaction recovery, settlement workflows, and product delivery
+
+**Team:** Three founders; I own the web application and established its engineering patterns. One engineering cofounder owns the smart contracts and contributes across the app; the other leads product, design, and partnerships.
 
 Joust lets people create prediction pools, stake tokens on outcomes, and choose someone they trust to settle the result. The intended setting is a friend group, group chat, niche Discord, or streamer community where an arbiter already has relationships and a reputation to protect.
 
-We launched on Abstract in late October 2025 for friends and family. That small group gave us a chance to use the product together, but we did not build a sustained community around it. As of September 2026, the web app is in maintenance while I rework it; the Abstract contract remains deployed. I continue to develop Joust as an independent project and want to find the right community and collaborators for its next iteration.
+We launched on Abstract in late October 2025 for friends and family. That release let us exercise the core creation, entry, arbitration, settlement, and refund flows together. The public app is now in maintenance while I develop its next iteration; the Abstract contract remains deployed.
 
-![Joust testnet home showing discovery, arbiter invitations, and participating pools](../assets/joust/joust-home.jpg)
+<p align="center">
+  <img src="../assets/joust/joust-create-mobile.jpeg" width="360" alt="Joust mobile creation flow with arbiter, outcomes, expiration, and collateral controls" />
+</p>
 
-_Images show the application with testnet data, not activity from the 2025 launch._
+*The mobile creation flow exposes pool terms before opening the wallet. The screen uses testnet data, not activity from the 2025 launch.*
 
 ## Make trust a product decision
 
@@ -21,8 +25,6 @@ The premise is simple: join a market when you trust its arbiter. A community mod
 Pools support binary questions or multiple outcomes. Participants contribute tokens to a shared pool, and the contract calculates payouts when the arbiter selects the result. My responsibility was the application around that contract: creation and entry flows, wallet interactions, lifecycle state, settlement records, and background jobs.
 
 An invited arbiter must accept before a pool opens. The invitation presents the terms and obligations, including the deadline, collateral token, minimum entry, and arbiter fee. If the invitation is never accepted, the pool remains pending until declined or expired. If an unsettled pool passes its expiry by a day, a participant can trigger a refund for everyone rather than wait indefinitely for its arbiter.
-
-![Testnet arbiter invitation showing pool terms and settlement responsibilities](../assets/joust/joust-arbiter-invitation.jpg)
 
 Honor voting adds a record of participants' experience. After settlement or refund, participants can cast one vote on the pool's arbiter; self-voting is excluded, and a downvote requires a comment. A background job calculates a weighted score using stake value, account age, and voter diversity, with diminishing weight for repeated positive votes and stronger penalties for negative feedback. This supplements the community's existing trust rather than establishing that an unfamiliar arbiter is trustworthy.
 
@@ -56,11 +58,15 @@ An Inngest workflow reads the contract's settlement summary in a retryable step 
 
 The same separation carries into the interface: Next.js server rendering populates the initial screens, while TanStack Query supports filtering, pagination, and refreshes after transactions. A user can be a participant in one pool and an arbiter in another, with both views drawing from shared query functions and keys.
 
-## What this project demonstrates
+## Building the application end to end
 
-Joust gave me ownership of an application across product interactions, persistence, wallet integration, and asynchronous processing, alongside a cofounder responsible for the contract layer. Its small friends-and-family launch is evidence of shipping and using the product together; the current implementation is continuing engineering work, not evidence of operation at scale.
+Joust gives me ownership across product interactions, persistence, wallet integration, asynchronous processing, and production delivery, alongside a cofounder responsible for the contract layer. Current work is focused on strengthening transaction observation and recovery, simplifying the product flows, and preparing the application for another community launch.
 
-The playful castle setting is part of that product identity. A layered PixiJS background adds atmosphere behind the React interfaces, with a reduced-motion path. The next product challenge is finding a community whose own questions and relationships make these markets worth returning to.
+The playful castle setting is part of the product identity. A layered PixiJS background adds atmosphere behind the React interfaces, with a reduced-motion path.
+
+![Animated Joust castle atmosphere with a star field and fireflies](../assets/joust/joust-atmosphere-1.gif)
+
+*The layered PixiJS scene animates independently behind the React application.*
 
 ## Stack
 

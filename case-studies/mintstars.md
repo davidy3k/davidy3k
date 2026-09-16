@@ -12,7 +12,7 @@ I built the replacement with a UI-focused mid-level engineer while we maintained
 
 ![MintStars creator dashboard with sample earnings, weekly metrics, and top fans](../assets/mintstars/mintstars-dashboard.png)
 
-*Recreated interface from my tenure, using synthetic names and figures. This is sample data, not a record of company performance.*
+*Local application build populated with synthetic names and figures. This is sample data, not a record of company performance.*
 
 ## Moving everyday commerce offchain
 
@@ -36,7 +36,7 @@ The same transaction model connects deposits, subscriptions, tips, resales, roya
 
 ![MintStars transaction history with sample deposits, purchases, tips, royalties, and withdrawals](../assets/mintstars/mintstars-transaction-history.png)
 
-*Recreated interface with synthetic people, dates, titles, and amounts. Creators could filter their history and export it as CSV.*
+*Local application build populated with synthetic people, dates, titles, and amounts. Creators could filter their history and export it as CSV.*
 
 ## Connecting external payments to internal balances
 

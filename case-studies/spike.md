@@ -2,9 +2,9 @@
 
 ### Rebuilding an editorial archive for a new publishing platform
 
-**Role:** Freelance Software Engineer
+**Freelance Software Engineer · March–November 2023**
 
-**Dates:** March–November 2023, with occasional support through late 2024
+**Additional support:** Occasional part-time requests through late 2024, alongside my role at MintStars
 
 **Scope:** Archive migration and search ownership; shared frontend and Sanity Studio implementation
 
@@ -50,9 +50,10 @@ One content-model detail I changed was separating the article's online publicati
 
 The frontend uses both GraphQL and Sanity's GROQ query language. Article loading uses GROQ to resolve references embedded in the body, including advertising content, alongside the article's text and media.
 
-<p>
-  <img src="../assets/spike/spike-article-3.jpeg" width="72%" alt="Desktop opening of Those Torsos of Apollo with centered metadata and a wide artwork" />
-  <img src="../assets/spike/spike-article-mobile-2.jpeg" width="23%" alt="The same article opening on mobile, with the headline and metadata wrapping above the artwork" />
+![Desktop opening of Those Torsos of Apollo with centered metadata and a wide artwork](../assets/spike/spike-article-3.jpeg)
+
+<p align="center">
+  <img src="../assets/spike/spike-article-mobile-2.jpeg" width="320" alt="The same article opening on mobile, with the headline and metadata wrapping above the artwork" />
 </p>
 
 _The same article opening at desktop and mobile widths: typography, metadata, and imagery recompose around the viewport._
@@ -62,6 +63,8 @@ _The same article opening at desktop and mobile widths: typography, metadata, an
 I integrated Algolia with an initial archive import and a Sanity webhook handler for subsequent article changes. The index includes headlines, introductions, authors, tags, and publication metadata, supporting keyword search and the archive's discovery controls.
 
 ![Spike search results with category, year, author, and list-view controls](../assets/spike/spike-search.jpeg)
+
+*Algolia powers keyword search and archive discovery controls across the migrated publication history.*
 
 The Next.js application generates article pages statically, with on-demand generation for new paths and periodic regeneration for editorial updates. This lets the platform serve generated pages while keeping publishing in Sanity. Updates can appear after regeneration rather than immediately on every request.
 
